@@ -17,9 +17,9 @@ endpoint_set_dial_color = f"/api/v0/dial/{target_dial_uid}/backlight"
 current_dial_value = 35
 
 # Kinda purple!
-current_dial_color_red = 70
+current_dial_color_red   = 70
 current_dial_color_green = 35
-current_dial_color_blue = 70
+current_dial_color_blue  = 70
 
 r = requests.get(f'http://{vu1_server_address}:{vu1_server_port}/{endpoint_set_dial_value}?key={server_api_key}&value={current_dial_value}')
 print(r.text)
