@@ -3,6 +3,8 @@
 import os
 import requests
 import logging
+import time
+import random
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
@@ -35,8 +37,8 @@ class VUMeter:
         try:
             r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}&value={value}')
         except Exception as exc:
-            LOGGER.error("Insertion has encountered an error: %s", exc)
-            return False
+            LOGGER.error("Error Result: %s", exc)
+            return exc
 
         return r.text
 
@@ -53,8 +55,8 @@ class VUMeter:
         try:
             r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}&red={red}&green={green}&blue={blue}')
         except Exception as exc:
-            LOGGER.error("Insertion has encountered an error: %s", exc)
-            return False
+            LOGGER.error("Error Result: %s", exc)
+            return exc
 
         return r.text
 
@@ -65,6 +67,15 @@ if __name__ == "__main__":
         srv_address = os.environ['VU1_SERVER_ADDRESS']
         srv_port    = os.environ['VU1_SERVER_PORT']
 
+        red = random.randint(0, 100)
+        green = random.randint(0, 100)
+        blue = random.randint(0, 100)
+
+        value = random.randint(0, 100)
+
         vu_meter  = VUMeter(srv_address, srv_port, server_key)
-        result = vu_class.hello_world()
+        result = vu_meter.set_dial_value(dial_uuid, value)
+        time.sleep(1)
         LOGGER.info("Response: %s", result)
+        result = vu_meter.set_dial_color(dial_uuid, red, green, blue)
+        time.sleep(1)
