@@ -6,21 +6,15 @@ import logging
 import time
 import random
 
-logging.basicConfig(
-    format='%(asctime)s %(levelname)-8s %(message)s',
-    level=logging.INFO,
-    datefmt='%Y-%m-%d %H:%M:%S')
-
-LOGGER = logging.getLogger(__name__)
-
-
 class VUMeter:
     def __init__(self, server_address: str, server_port: int, api_key: str):
         """
-        Initialize the class with a base string.
+        Initialize the class with required values.
         
-        :param query: str, a sql query with proper syntax.
-        :return True: bool, returns True if the insert is completed.
+        :param server_address: str, the server ip address.
+        :param server_port: int, the vu-dial server port.
+        :param api_key: str, a valid api key for the vu-dial server.
+
         """
         self.server_url = f'http://{server_address}:{server_port}'
         self.key        = api_key
