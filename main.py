@@ -31,8 +31,6 @@ class VUMeter:
         """
         This function list the connected vu-dials.
 
-        :param uuid: str, the uuid of the vu-dial.
-        :param value: int, value of dial position between 0 and 100.
         :return result: str, returns the request query result.
         """
         api_uri = '/api/v0/dial/list'
@@ -46,10 +44,9 @@ class VUMeter:
     
     def get_dial_info(self, uuid: str) -> str:
         """
-        This function sets the dial position.
+        This function gets the vu-dial information.
 
         :param uuid: str, the uuid of the vu-dial.
-        :param value: int, value of dial position between 0 and 100.
         :return result: str, returns the request query result.
         """
         api_uri = f'/api/v0/dial/{uuid}/status'
@@ -63,10 +60,9 @@ class VUMeter:
 
     def get_image_crc(self, uuid: str) -> str:
         """
-        This function sets the dial position.
+        This function sets the vu-dial position.
 
         :param uuid: str, the uuid of the vu-dial.
-        :param value: int, value of dial position between 0 and 100.
         :return result: str, returns the request query result.
         """
         api_uri = f'/api/v0/dial/{uuid}/image/crc'
@@ -80,7 +76,7 @@ class VUMeter:
     
     def set_dial_value(self, uuid: str, value: int) -> str:
         """
-        This function sets the dial position.
+        This function sets the vu-dial position.
 
         :param uuid: str, the uuid of the vu-dial.
         :param value: int, value of dial position between 0 and 100.
