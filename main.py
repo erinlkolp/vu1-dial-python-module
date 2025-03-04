@@ -148,11 +148,10 @@ class VUMeter:
 
         try:
             r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}&name={name}')
-            print(r)
         except Exception as exc:
             raise exc
 
-        return r.text
+        return json.loads(r.text)
 
 if __name__ == "__main__":
     dial_uid    = os.environ['TARGET_DIAL_UID']
@@ -169,24 +168,6 @@ if __name__ == "__main__":
 
         vu_meter  = VUMeter(srv_address, srv_port, server_key)
 
-        # result = vu_meter.set_dial_color(dial_uid, red, green, blue)
-        # print(json.dumps(result))
-
-        # result = vu_meter.set_dial_value(dial_uid, value)
-        # print(json.dumps(result))
-        # time.sleep(2)
-
-        # result = vu_meter.list_dials()
-        # print(json.dumps(result))
-
-        # result = vu_meter.get_dial_info(dial_uid)
-        # print(json.dumps(result))
-
-        # result = vu_meter.get_image_crc(dial_uid)
-        # print(json.dumps(result))
-
-        # result = vu_meter.set_dial_background(dial_uid, '/Users/ekolp/workspace/vu1-dial-python-module/sample.png')
-        # print(json.dumps(result))
-
         result = vu_meter.set_dial_name(dial_uid, "ErinDevTest")
+        print(result)
         time.sleep(1)
