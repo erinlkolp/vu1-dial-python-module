@@ -120,6 +120,40 @@ class VUMeter:
 
         return json.loads(r.text)
 
+    def get_dial_image_crc(self, uid: str) -> str:
+        """
+        This function gets the vu-dial image crc.
+
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        api_uri = f'/api/v0/dial/{uid}/image/crc'
+
+        try:
+            r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}')
+            print(r)
+        except Exception as exc:
+            raise exc
+
+        return r.text
+
+    def set_dial_name(self, uid: str, name: str) -> str:
+        """
+        This function sets the vu-dial name.
+
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        api_uri = f'/api/v0/dial/{uid}/name'
+
+        try:
+            r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}&name={name}')
+            print(r)
+        except Exception as exc:
+            raise exc
+
+        return r.text
+
 if __name__ == "__main__":
     dial_uid    = os.environ['TARGET_DIAL_UID']
     server_key     = os.environ['API_KEY']
@@ -151,5 +185,8 @@ if __name__ == "__main__":
         # result = vu_meter.get_image_crc(dial_uid)
         # print(json.dumps(result))
 
-        result = vu_meter.set_dial_background(dial_uid, '/Users/ekolp/workspace/vu1-dial-python-module/sample.png')
-        print(json.dumps(result))
+        # result = vu_meter.set_dial_background(dial_uid, '/Users/ekolp/workspace/vu1-dial-python-module/sample.png')
+        # print(json.dumps(result))
+
+        result = vu_meter.set_dial_name(dial_uid, "ErinDevTest")
+        time.sleep(1)
