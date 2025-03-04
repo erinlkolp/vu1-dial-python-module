@@ -134,7 +134,7 @@ class VUMeter:
         except Exception as exc:
             raise exc
 
-        return r.text
+        return json.loads(r.text)
 
     def set_dial_name(self, uid: str, name: str) -> str:
         """
@@ -168,6 +168,6 @@ if __name__ == "__main__":
 
         vu_meter  = VUMeter(srv_address, srv_port, server_key)
 
-        result = vu_meter.set_dial_name(dial_uid, "ErinDevTest")
+        result = vu_meter.get_dial_image_crc(dial_uid)
         print(result)
         time.sleep(1)
