@@ -131,7 +131,6 @@ class VUMeter:
 
         try:
             r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}')
-            print(r)
         except Exception as exc:
             raise exc
 
