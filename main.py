@@ -142,6 +142,7 @@ class VUMeter:
         This function sets the vu-dial name.
 
         :param uid: str, the uid of the vu-dial.
+        :param name: str, the name of the vu-dial you wish to apply.
         :return result: dict, returns the request query result.
         """
         api_uri = f'/api/v0/dial/{uid}/name'
