@@ -121,7 +121,7 @@ class VUMeter:
 
         return json.loads(r.text)
 
-    def get_dial_image_crc(self, uid: str) -> str:
+    def get_dial_image_crc(self, uid: str) -> dict:
         """
         This function gets the vu-dial image crc.
 
@@ -137,7 +137,7 @@ class VUMeter:
 
         return json.loads(r.text)
 
-    def set_dial_name(self, uid: str, name: str) -> str:
+    def set_dial_name(self, uid: str, name: str) -> dict:
         """
         This function sets the vu-dial name.
 
