@@ -1,0 +1,13 @@
+loaders:
+  - type: python
+    search_path: [./src/vudials_client/]
+
+processors:
+  - type: filter
+  - type: smart
+  - type: crossref
+
+renderer:
+  type: markdown
+  descriptive_class_title: true
+  filename: docs/api.md
