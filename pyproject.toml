@@ -1,0 +1,23 @@
+[build-system]
+requires = ["requests", "hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vudials_client"
+version = "2025.3.2"
+authors = [
+  { name="Erin L. Kolp", email="erinlkolpfoss@gmail.com" },
+]
+description = "A python client module for VU1 Dials from Streacom"
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/erinlkolp/vu1-dial-python-module"
+Issues = "https://github.com/erinlkolp/vu1-dial-python-module/issues"
