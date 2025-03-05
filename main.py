@@ -152,22 +152,3 @@ class VUMeter:
             raise exc
 
         return json.loads(r.text)
-
-if __name__ == "__main__":
-    dial_uid    = os.environ['TARGET_DIAL_UID']
-    server_key     = os.environ['API_KEY']
-    srv_address = os.environ['VU1_SERVER_ADDRESS']
-    srv_port    = os.environ['VU1_SERVER_PORT']
-
-    while True:
-        red = random.randint(0, 100)
-        green = random.randint(0, 100)
-        blue = random.randint(0, 100)
-
-        value = random.randint(0, 100)
-
-        vu_meter  = VUMeter(srv_address, srv_port, server_key)
-
-        result = vu_meter.get_dial_image_crc(dial_uid)
-        print(result)
-        time.sleep(1)
