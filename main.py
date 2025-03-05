@@ -115,7 +115,7 @@ class VUMeter:
         try:
             with open(f'{file}', 'rb') as file:
                 files = {'imgfile': file}
-                r = requests.post(f'{self.server_url}/{api_uri}?key={self.key}',files=files)
+                r = requests.post(f'{self.server_url}/{api_uri}?key={self.key}', files=files)
         except Exception as exc:
             raise exc
 
