@@ -94,7 +94,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### 2025.3.2 (2025-03-05)
 - Initial release
-- Partial dial api implementede Z
+- Partial dial api implementation
 
 ## License & Author
 
