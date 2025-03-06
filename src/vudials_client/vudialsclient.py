@@ -45,22 +45,6 @@ class VUDial:
 
         return json.loads(r.text)
 
-    def get_image_crc(self, uid: str) -> dict:
-        """
-        This function sets the vu-dial position.
-
-        :param uid: str, the uid of the vu-dial.
-        :return result: dict, returns the request query result.
-        """
-        api_uri = f'/api/v0/dial/{uid}/image/crc'
-
-        try:
-            r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}')
-        except Exception as exc:
-            raise exc
-
-        return json.loads(r.text)
-    
     def set_dial_value(self, uid: str, value: int) -> dict:
         """
         This function sets the vu-dial position.

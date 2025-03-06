@@ -1,29 +1,26 @@
-# MyPythonModule
+# vudials_client
 
-[![PyPI version](https://badge.fury.io/py/mypythonmodule.svg)](https://badge.fury.io/py/mypythonmodule)
-[![Build Status](https://travis-ci.org/username/mypythonmodule.svg?branch=master)](https://travis-ci.org/username/mypythonmodule)
-[![Coverage Status](https://coveralls.io/repos/github/username/mypythonmodule/badge.svg?branch=master)](https://coveralls.io/github/username/mypythonmodule?branch=master)
+[![PyPI version](https://badge.fury.io/py/vudials-client.svg)](https://badge.fury.io/py/vudials-client)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A clear and concise description of what your module does and what problem it solves. This should be 1-3 sentences that quickly convey the purpose to potential users.
+A Python client module for Streacom's VU1 Dial development hardware. This provides a simple interface to manipulate multiple dials.
 
 ## Features
 
-- **Key Feature 1**: Brief explanation of this feature
-- **Key Feature 2**: Brief explanation of this feature
-- **Key Feature 3**: Brief explanation of this feature
+- **Full Dial API**: Easily change your dial's value, color, name, background image, and more!
+- **Full Admin API**: Provides VU1 Dial Server API key management.
 
 ## Installation
 
 ```bash
-pip install mypythonmodule
+pip install -r requirements.txt --extra-index-url https://test.pypi.org/simple/
 ```
 
 For development installation:
 
 ```bash
-git clone https://github.com/username/mypythonmodule.git
-cd mypythonmodule
+git clone git@github.com:erinlkolp/vu1-dial-python-module.git
+cd vu1-dial-python-module/
 pip install -e ".[dev]"
 ```
 
@@ -32,75 +29,46 @@ pip install -e ".[dev]"
 Here's a simple example to get you started:
 
 ```python
-import mypythonmodule
+from vudials_client import vudialsclient
 
-# Create an instance
-my_object = mypythonmodule.MyClass(param1='value1', param2=42)
+dial_uid       = os.environ['TARGET_DIAL_UID']
+server_key     = os.environ['API_KEY']
+srv_address    = os.environ['VU1_SERVER_ADDRESS']
+srv_port       = os.environ['VU1_SERVER_PORT']
 
-# Use a key function
-result = my_object.process_data('input data')
+vu_meter  = vudialsclient.VUDial(srv_address, srv_port, server_key)
+
+result = vu_meter.get_dial_image_crc(dial_uid)
 print(result)
-
-# Use a utility function
-mypythonmodule.utils.helper_function()
 ```
 
 ## Documentation
 
-For detailed documentation, see [the official documentation](https://mypythonmodule.readthedocs.io/).
+For detailed documentation, see [the official documentation](https://github.com/erinlkolp/vu1-dial-python-module/blob/main/docs/api.md).
 
 ### Main Classes
 
-#### `MyClass`
+#### `VUDial`
 
 The primary class for interacting with the module.
 
 ```python
-my_instance = MyClass(param1, param2)
+vu_meter  = vudialsclient.VUDial(srv_address, srv_port, server_key)
 ```
 
 **Parameters:**
-- `param1` (str): Description of parameter
-- `param2` (int, optional): Description of parameter. Default: 10
+- `server_address` (str): VU1 Dials Server host (ie. localhost)
+- `server_port` (int): VU1 Dials Server port (ie. 5340)
+- `api_key` (str): A valid API key for the VU1 Dials Server
 
 **Methods:**
-- `process_data(input_data)`: Processes the given data and returns a result
-- `save_results(filename)`: Saves the current state to a file
-
-#### `AnotherClass`
-
-A secondary class for additional functionality.
-
-### Utility Functions
-
-- `mypythonmodule.utils.helper_function()`: Description of what this utility does
-
-## Advanced Usage
-
-### Configuration
-
-The module can be configured using:
-
-```python
-from mypythonmodule import config
-
-config.set_option('option_name', value)
-```
-
-### Integration with Other Libraries
-
-Example of integrating with a popular library:
-
-```python
-import pandas as pd
-import mypythonmodule
-
-# Load data
-df = pd.read_csv('data.csv')
-
-# Process with your module
-processed_data = mypythonmodule.process_dataframe(df)
-```
+- `list_dials()`: Processes the given data and returns a result
+- `get_dial_info(uid)`: Saves the current state to a file
+- `set_dial_value(uid, value)`: Sets a dial's value (position)
+- `set_dial_color(uid, red, green, blue)`: Sets a dial's backlight color
+- `set_dial_background(uid, file)`: Sets a dial's background image
+- `get_dial_image_crc(uid)`: Obtains a dial's image CRC
+- `set_dial_name(uid, name)`: Sets a dial's name (no spaces)
 
 ## Contributing
 
@@ -120,23 +88,25 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgements
 
-- List any libraries, tools, or resources that inspired or supported your project
-- Credit collaborators or significant contributors
-- Link to related projects
+- Many thanks to everyone who code reviewed!
 
 ## Changelog
 
-### 1.0.0 (2025-03-01)
+### 2025.3.2 (2025-03-05)
 - Initial release
-- Feature X implemented
-- Feature Y implemented
+- Partial dial api implementede Z
 
-### 0.9.0 (2025-02-15)
-- Beta release
-- Fixed critical bug in feature Z
+## License & Author
 
-## Contact
+- Author:: Erin L. Kolp (<erinlkolpfoss@gmail.com>)
 
-Your Name - [@your_twitter](https://twitter.com/your_twitter) - email@example.com
+Copyright (c) 2025 Erin L. Kolp 
 
-Project Link: [https://github.com/username/mypythonmodule](https://github.com/username/mypythonmodule)
+Licensed under the MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
