@@ -92,6 +92,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
+### 2025.3.3 (2025-03-07)
+- Adds documentation
+
 ### 2025.3.2 (2025-03-05)
 - Initial release
 - Partial dial api implementation
