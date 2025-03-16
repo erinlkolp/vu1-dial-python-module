@@ -1,18 +1,6 @@
 import requests
 import json
-import logging
 
-import os
-
-logging.basicConfig(
-    format='%(asctime)s %(levelname)-8s %(message)s',
-    level=logging.DEBUG,
-    datefmt='%Y-%m-%d %H:%M:%S')
-
-LOGGER = logging.getLogger(__name__)
-
-requests_log = logging.getLogger("requests")
-requests_log.setLevel(logging.WARNING)
 
 class VUDial:
     def __init__(self, server_address: str, server_port: int, api_key: str):
@@ -26,74 +14,21 @@ class VUDial:
         self.server_url = f'http://{server_address}:{server_port}'
         self.key        = api_key
 
-        LOGGER.debug(f"Instantiated VU1Dial Server at {self.server_url}")
-
-    def _get_uri(self, short_uri: str, **kwargs) -> str:
-        server_version = 'v0'
-
-        LOGGER.debug(f"VU1Dial Server version: {server_version}")
-        LOGGER.debug(f"Looking up full path uri for: {short_uri}")
-
-        if short_uri == 'dial/list':
-            api_uri = f'{self.server_url}/api/{server_version}/dial/list?key={self.key}'
-        elif short_uri == 'dial/info':
-            api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/status?key={self.key}'
-        elif short_uri == 'dial/value':
-            api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/set?key={self.key}&value={kwargs.get('value')}'
-        elif short_uri == 'dial/backlight':
-            api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/backlight?key={self.key}&red={kwargs.get('red')}&green={kwargs.get('green')}&blue={kwargs.get('blue')}'
-        elif short_uri == 'dial/crc':
-            api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/image/crc?key={self.key}'
-        elif short_uri == 'dial/name':
-            api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/name?key={self.key}&name={kwargs.get('name')}'
-        elif short_uri == 'dial/background':
-            api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/image/set?key={self.key}'
-        elif short_uri == 'dial/reload':
-            api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/reload?key={self.key}'
-        elif short_uri == 'dial/dial_easing':
-            api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/easing/dial?key={self.key}&period={kwargs.get('period')}&step={kwargs.get('step')}'
-        elif short_uri == 'dial/backlight_easing':
-            api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/easing/backlight?key={self.key}&period={kwargs.get('period')}&step={kwargs.get('step')}'
-        elif short_uri == 'dial/get_easing':
-            api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/easing/get?key={self.key}'
-
-        else:
-            LOGGER.error(f"Lookup key not supported: {short_uri}")
-
-
-        LOGGER.debug(f"Returning full path uri: {api_uri}")
-
-        return api_uri
-
-    def _send_http_request(self, path_uri: str, files: dict) -> dict:        
-        try:
-            LOGGER.debug(f"Making http request: {path_uri}")
-
-            if files is not None:
-                r = requests.post(f'{path_uri}', files=files)
-            else:
-                r = requests.get(f'{path_uri}')
-        except Exception as exc:
-            raise exc
-
-        return r.text
-
     def list_dials(self) -> dict:
         """
         This function list the connected vu-dials.
 
         :return result: dict, returns the request query result.
         """
-        uri_base  = 'dial/list'
+        api_uri = '/api/v0/dial/list'
 
         try:
-            full_uri = self._get_uri(uri_base)
-            r = self._send_http_request(full_uri, None)
+            r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}')
         except Exception as exc:
             raise exc
 
-        return r
-        
+        return json.loads(r.text)
+    
     def get_dial_info(self, uid: str) -> dict:
         """
         This function gets the vu-dial information.
@@ -101,15 +36,14 @@ class VUDial:
         :param uid: str, the uid of the vu-dial.
         :return result: dict, returns the request query result.
         """
-        uri_base  = 'dial/info'
+        api_uri = f'/api/v0/dial/{uid}/status'
 
         try:
-            full_uri = self._get_uri(uri_base, uid=f"{uid}")
-            r = self._send_http_request(full_uri, None)
+            r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}')
         except Exception as exc:
             raise exc
 
-        return r
+        return json.loads(r.text)
 
     def set_dial_value(self, uid: str, value: int) -> dict:
         """
@@ -119,15 +53,14 @@ class VUDial:
         :param value: int, value of dial position between 0 and 100.
         :return result: dict, returns the request query result.
         """
-        uri_base  = 'dial/value'
+        api_uri = f'/api/v0/dial/{uid}/set'
 
         try:
-            full_uri = self._get_uri(uri_base, uid=f"{uid}", value=f"{value}")
-            r = self._send_http_request(full_uri, None)
+            r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}&value={value}')
         except Exception as exc:
             raise exc
 
-        return r
+        return json.loads(r.text)
 
     def set_dial_color(self, uid: str, red: int, green: int, blue: int) -> dict:
         """
@@ -140,51 +73,15 @@ class VUDial:
         :return result: dict, returns the request query result.
         """
 
-        uri_base  = 'dial/backlight'
+        api_uri = f'/api/v0/dial/{uid}/backlight'
 
         try:
-            full_uri = self._get_uri(uri_base, uid=f"{uid}", red=f"{red}", green=f"{green}", blue=f"{blue}")
-            r = self._send_http_request(full_uri, None)
+            r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}&red={red}&green={green}&blue={blue}')
         except Exception as exc:
             raise exc
 
-        return r
-
-    def get_dial_image_crc(self, uid: str) -> dict:
-        """
-        This function gets the vu-dial image crc.
-
-        :param uid: str, the uid of the vu-dial.
-        :return result: dict, returns the request query result.
-        """
-        uri_base  = 'dial/crc'
-
-        try:
-            full_uri = self._get_uri(uri_base, uid=f"{uid}")
-            r = self._send_http_request(full_uri, None)
-        except Exception as exc:
-            raise exc
-
-        return r
-
-    def set_dial_name(self, uid: str, name: str) -> dict:
-        """
-        This function sets the vu-dial name.
-
-        :param uid: str, the uid of the vu-dial.
-        :param name: str, the name of the vu-dial you wish to apply.
-        :return result: dict, returns the request query result.
-        """
-        uri_base  = 'dial/name'
-
-        try:
-            full_uri = self._get_uri(uri_base, uid=f"{uid}", name=f"{name}")
-            r = self._send_http_request(full_uri, None)
-        except Exception as exc:
-            raise exc
-
-        return r
-
+        return json.loads(r.text)
+    
     def set_dial_background(self, uid: str, file: str) -> dict:
         """
         This function sets the dial background image from PNG file.
@@ -194,115 +91,46 @@ class VUDial:
         :return result: dict, returns the request query result.
         """
 
-        uri_base  = 'dial/background'
+        api_uri = f'/api/v0/dial/{uid}/image/set'
 
         try:
-            full_uri = self._get_uri(uri_base, uid=f"{uid}")
-
             with open(f'{file}', 'rb') as file:
-                files = {'imgfile': file}        
-                r = self._send_http_request(full_uri, files)
+                files = {'imgfile': file}
+                r = requests.post(f'{self.server_url}/{api_uri}?key={self.key}', files=files)
         except Exception as exc:
             raise exc
 
-        return r
+        return json.loads(r.text)
 
-    def reload_hw_info(self, uid: str) -> dict:
+    def get_dial_image_crc(self, uid: str) -> dict:
         """
-        This function reloads the vudial hardware information.
+        This function gets the vu-dial image crc.
 
         :param uid: str, the uid of the vu-dial.
         :return result: dict, returns the request query result.
         """
-        uri_base  = 'dial/reload'
+        api_uri = f'/api/v0/dial/{uid}/image/crc'
 
         try:
-            full_uri = self._get_uri(uri_base, uid=f"{uid}")
-            r = self._send_http_request(full_uri, None)
+            r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}')
         except Exception as exc:
             raise exc
 
-        return r
+        return json.loads(r.text)
 
-    def set_dial_easing(self, uid: str, period: int, step: int) -> dict:
+    def set_dial_name(self, uid: str, name: str) -> dict:
         """
-        This function reloads the vudial hardware information.
+        This function sets the vu-dial name.
 
         :param uid: str, the uid of the vu-dial.
+        :param name: str, the name of the vu-dial you wish to apply.
         :return result: dict, returns the request query result.
         """
-        uri_base  = 'dial/dial_easing'
+        api_uri = f'/api/v0/dial/{uid}/name'
 
         try:
-            full_uri = self._get_uri(uri_base, uid=f"{uid}", period=f"{period}", step=f"{step}")
-            r = self._send_http_request(full_uri, None)
+            r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}&name={name}')
         except Exception as exc:
             raise exc
 
-        return r
-
-    def set_backlight_easing(self, uid: str, period: int, step: int) -> dict:
-        """
-        This function reloads the vudial hardware information.
-
-        :param uid: str, the uid of the vu-dial.
-        :return result: dict, returns the request query result.
-        """
-        uri_base  = 'dial/backlight_easing'
-
-        try:
-            full_uri = self._get_uri(uri_base, uid=f"{uid}", period=f"{period}", step=f"{step}")
-            r = self._send_http_request(full_uri, None)
-        except Exception as exc:
-            raise exc
-
-        return r
-    
-    def get_easing_config(self, uid: str) -> dict:
-        """
-        This function reloads the vudial hardware information.
-
-        :param uid: str, the uid of the vu-dial.
-        :return result: dict, returns the request query result.
-        """
-        uri_base  = 'dial/get_easing'
-
-        try:
-            full_uri = self._get_uri(uri_base, uid=f"{uid}")
-            r = self._send_http_request(full_uri, None)
-        except Exception as exc:
-            raise exc
-
-        return r
-
-
-
-# dial_uid       = os.environ['TARGET_DIAL_UID']
-# server_key     = os.environ['API_KEY']
-# srv_address    = os.environ['VU1_SERVER_ADDRESS']
-# srv_port       = os.environ['VU1_SERVER_PORT']
-
-# vu_meter  = VUDial(srv_address, srv_port, server_key)
-
-# result = vu_meter.set_dial_color(dial_uid, 25, 25, 65)
-# LOGGER.debug(f"{result}")
-# result = vu_meter.list_dials()
-# LOGGER.debug(f"{result}")
-# result = vu_meter.get_dial_info(dial_uid)
-# LOGGER.debug(f"{result}")
-# result = vu_meter.set_dial_value(dial_uid, 50)
-# LOGGER.debug(f"{result}")
-# result = vu_meter.get_dial_image_crc(dial_uid)
-# LOGGER.debug(f"{result}")
-# result = vu_meter.set_dial_name(dial_uid, "erindial")
-# LOGGER.debug(f"{result}")
-# result = vu_meter.set_dial_background(dial_uid, "/Users/ekolp/workspace/vu1-dial-python-module/image.png")
-# LOGGER.debug(f"{result}")
-# result = vu_meter.reload_hw_info(dial_uid)
-# LOGGER.debug(f"{result}")
-# result = vu_meter.set_dial_easing(dial_uid, 50, 5)
-# LOGGER.debug(f"{result}")
-# result = vu_meter.set_backlight_easing(dial_uid, 50, 5)
-# LOGGER.debug(f"{result}")
-# result = vu_meter.get_easing_config(dial_uid)
-# LOGGER.debug(f"{result}")
+        return json.loads(r.text)
