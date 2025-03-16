@@ -13,22 +13,10 @@ LOGGER = logging.getLogger(__name__)
 requests_log = logging.getLogger("requests")
 requests_log.setLevel(logging.WARNING)
 
-
-class VUDial:
-    def __init__(self, server_address: str, server_port: int, api_key: str):
-        """
-        Initialize the class with required values.
-        
-        :param server_address: str, the server ip address.
-        :param server_port: int, the vu-dial server port.
-        :param api_key: str, a valid api key for the vu-dial server.
-        """
-        self.server_url = f'http://{server_address}:{server_port}'
-        self.key        = api_key
-
-    def _get_uri(self, api_version: str, api_call: str, keyword_params: str, **kwargs) -> dict:        
+class VUUtil:
+    def _get_uri(self, server_url: str, api_version: str, api_call: str, keyword_params: str, **kwargs) -> str:        
         try:
-            api_base = f'{self.server_url}/api/{api_version}/{api_call}?key={self.key}{keyword_params}'
+            api_base = f'{server_url}/api/{api_version}/{api_call}?key={self.key}{keyword_params}'
             print(api_base)
         except Exception as exc:
             raise exc
@@ -46,6 +34,18 @@ class VUDial:
 
         return r
 
+class VUDial(VUUtil):
+    def __init__(self, server_address: str, server_port: int, api_key: str):
+        """
+        Initialize the class with required values.
+        
+        :param server_address: str, the server ip address.
+        :param server_port: int, the vu-dial server port.
+        :param api_key: str, a valid api key for the vu-dial server.
+        """
+        self.server_url = f'http://{server_address}:{server_port}'
+        self.key        = api_key
+
     def list_dials(self, api_version) -> dict:
         """
         This function list the connected vu-dials.
@@ -56,7 +56,7 @@ class VUDial:
         params = ''
 
         try:
-            r_uri = self._get_uri(api_version, api_call, params)
+            r_uri = self._get_uri(self.server_url, api_version, api_call, params)
             r = self._send_http_request(r_uri, None)
         except Exception as exc:
             raise exc
@@ -74,7 +74,7 @@ class VUDial:
         params = ''
 
         try:
-            r_uri = self._get_uri(api_version, api_call, params)
+            r_uri = self._get_uri(self.server_url, api_version, api_call, params)
             r = self._send_http_request(r_uri, None)
         except Exception as exc:
             raise exc
