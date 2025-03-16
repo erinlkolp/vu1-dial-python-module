@@ -48,6 +48,15 @@ class VUDial:
             api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/name?key={self.key}&name={kwargs.get('name')}'
         elif short_uri == 'dial/background':
             api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/image/set?key={self.key}'
+        elif short_uri == 'dial/reload':
+            api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/reload?key={self.key}'
+        elif short_uri == 'dial/dial_easing':
+            api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/easing/dial?key={self.key}&period={kwargs.get('period')}&step={kwargs.get('step')}'
+        elif short_uri == 'dial/backlight_easing':
+            api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/easing/backlight?key={self.key}&period={kwargs.get('period')}&step={kwargs.get('step')}'
+        elif short_uri == 'dial/get_easing':
+            api_uri = f'{self.server_url}/api/{server_version}/dial/{kwargs.get('uid')}/easing/get?key={self.key}'
+
         else:
             LOGGER.error(f"Lookup key not supported: {short_uri}")
 
@@ -198,22 +207,102 @@ class VUDial:
 
         return r
 
-dial_uid       = os.environ['TARGET_DIAL_UID']
-server_key     = os.environ['API_KEY']
-srv_address    = os.environ['VU1_SERVER_ADDRESS']
-srv_port       = os.environ['VU1_SERVER_PORT']
+    def reload_hw_info(self, uid: str) -> dict:
+        """
+        This function reloads the vudial hardware information.
 
-vu_meter  = VUDial(srv_address, srv_port, server_key)
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        uri_base  = 'dial/reload'
 
-result = vu_meter.list_dials()
-LOGGER.debug(f"{result}")
-result = vu_meter.get_dial_info(dial_uid)
-LOGGER.debug(f"{result}")
-result = vu_meter.set_dial_value(dial_uid, 25)
-LOGGER.debug(f"{result}")
-result = vu_meter.get_dial_image_crc(dial_uid)
-LOGGER.debug(f"{result}")
-result = vu_meter.set_dial_name(dial_uid, "erindial")
-LOGGER.debug(f"{result}")
-result = vu_meter.set_dial_background(dial_uid, "/Users/ekolp/workspace/vu1-dial-python-module/image.png")
-LOGGER.debug(f"{result}")
+        try:
+            full_uri = self._get_uri(uri_base, uid=f"{uid}")
+            r = self._send_http_request(full_uri, None)
+        except Exception as exc:
+            raise exc
+
+        return r
+
+    def set_dial_easing(self, uid: str, period: int, step: int) -> dict:
+        """
+        This function reloads the vudial hardware information.
+
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        uri_base  = 'dial/dial_easing'
+
+        try:
+            full_uri = self._get_uri(uri_base, uid=f"{uid}", period=f"{period}", step=f"{step}")
+            r = self._send_http_request(full_uri, None)
+        except Exception as exc:
+            raise exc
+
+        return r
+
+    def set_backlight_easing(self, uid: str, period: int, step: int) -> dict:
+        """
+        This function reloads the vudial hardware information.
+
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        uri_base  = 'dial/backlight_easing'
+
+        try:
+            full_uri = self._get_uri(uri_base, uid=f"{uid}", period=f"{period}", step=f"{step}")
+            r = self._send_http_request(full_uri, None)
+        except Exception as exc:
+            raise exc
+
+        return r
+    
+    def get_easing_config(self, uid: str) -> dict:
+        """
+        This function reloads the vudial hardware information.
+
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        uri_base  = 'dial/get_easing'
+
+        try:
+            full_uri = self._get_uri(uri_base, uid=f"{uid}")
+            r = self._send_http_request(full_uri, None)
+        except Exception as exc:
+            raise exc
+
+        return r
+
+
+
+# dial_uid       = os.environ['TARGET_DIAL_UID']
+# server_key     = os.environ['API_KEY']
+# srv_address    = os.environ['VU1_SERVER_ADDRESS']
+# srv_port       = os.environ['VU1_SERVER_PORT']
+
+# vu_meter  = VUDial(srv_address, srv_port, server_key)
+
+# result = vu_meter.set_dial_color(dial_uid, 25, 25, 65)
+# LOGGER.debug(f"{result}")
+# result = vu_meter.list_dials()
+# LOGGER.debug(f"{result}")
+# result = vu_meter.get_dial_info(dial_uid)
+# LOGGER.debug(f"{result}")
+# result = vu_meter.set_dial_value(dial_uid, 50)
+# LOGGER.debug(f"{result}")
+# result = vu_meter.get_dial_image_crc(dial_uid)
+# LOGGER.debug(f"{result}")
+# result = vu_meter.set_dial_name(dial_uid, "erindial")
+# LOGGER.debug(f"{result}")
+# result = vu_meter.set_dial_background(dial_uid, "/Users/ekolp/workspace/vu1-dial-python-module/image.png")
+# LOGGER.debug(f"{result}")
+# result = vu_meter.reload_hw_info(dial_uid)
+# LOGGER.debug(f"{result}")
+# result = vu_meter.set_dial_easing(dial_uid, 50, 5)
+# LOGGER.debug(f"{result}")
+# result = vu_meter.set_backlight_easing(dial_uid, 50, 5)
+# LOGGER.debug(f"{result}")
+# result = vu_meter.get_easing_config(dial_uid)
+# LOGGER.debug(f"{result}")
