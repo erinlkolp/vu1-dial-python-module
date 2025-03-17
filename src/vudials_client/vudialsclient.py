@@ -1,7 +1,5 @@
 import requests
-import json
 import logging
-import os
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',

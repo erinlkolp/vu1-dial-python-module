@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vudials_client"
-version = "2025.3.4"
+version = "2025.3.5"
 authors = [
   { name="Erin L. Kolp", email="erinlkolpfoss@gmail.com" },
 ]
