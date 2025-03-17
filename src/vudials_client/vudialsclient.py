@@ -10,23 +10,39 @@ logging.basicConfig(
 
 LOGGER = logging.getLogger(__name__)
 
-requests_log = logging.getLogger("requests")
-requests_log.setLevel(logging.WARNING)
-
 class VUUtil:
-    def _get_uri(self, server_url: str, api_version: str, api_call: str, keyword_params: str, **kwargs) -> str:        
+    def get_uri(self, server_url: str, api_key: str, api_version: str, api_call: str, keyword_params: str) -> str:        
         try:
-            api_base = f'{server_url}/api/{api_version}/{api_call}?key={self.key}{keyword_params}'
-            print(api_base)
+            api_base = f'{server_url}/api/{api_version}/{api_call}?key={api_key}{keyword_params}'
         except Exception as exc:
             raise exc
 
         return api_base
 
-    def _send_http_request(self, path_uri: str, files: dict) -> dict:        
+    def send_http_request(self, path_uri: str, files: dict) -> dict:      
         try:
             if files is not None:
                 r = requests.post(f'{path_uri}', files=files)
+            else:
+                r = requests.get(f'{path_uri}')
+        except Exception as exc:
+            raise exc
+
+        return r
+    
+class VUAdminUtil:
+    def get_uri(self, server_url: str, api_key: str, api_version: str, api_call: str, keyword_params: str) -> str:        
+        try:
+            api_base = f'{server_url}/api/{api_version}/{api_call}?admin_key={api_key}{keyword_params}'
+        except Exception as exc:
+            raise exc
+
+        return api_base
+
+    def send_http_request(self, path_uri: str, method: str) -> dict:      
+        try:
+            if method == "post":
+                r = requests.post(f'{path_uri}')
             else:
                 r = requests.get(f'{path_uri}')
         except Exception as exc:
@@ -56,8 +72,8 @@ class VUDial(VUUtil):
         params = ''
 
         try:
-            r_uri = self._get_uri(self.server_url, api_version, api_call, params)
-            r = self._send_http_request(r_uri, None)
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, None)
         except Exception as exc:
             raise exc
 
@@ -74,136 +90,276 @@ class VUDial(VUUtil):
         params = ''
 
         try:
-            r_uri = self._get_uri(self.server_url, api_version, api_call, params)
-            r = self._send_http_request(r_uri, None)
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, None)
         except Exception as exc:
             raise exc
 
         return r
 
+    def set_dial_value(self, api_version: str, uid: str, value: int) -> dict:
+        """
+        This function sets the dial value.
 
-dial_uid       = os.environ['TARGET_DIAL_UID']
-server_key     = os.environ['API_KEY']
-srv_address    = os.environ['VU1_SERVER_ADDRESS']
-srv_port       = os.environ['VU1_SERVER_PORT']
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        api_call = f'dial/{uid}/set'
+        params = f'&value={value}'
 
-vu_meter  = VUDial(srv_address, srv_port, server_key)
-api_server_version = 'v0'
-result = vu_meter.list_dials(api_server_version)
-LOGGER.debug(f"{result}")
-result = vu_meter.get_dial_info(api_server_version, dial_uid)
-LOGGER.debug(f"{result}")
+        try:
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, None)
+        except Exception as exc:
+            raise exc
 
+        return r
 
+    def set_dial_color(self, api_version: str, uid: str, red: int, green: int, blue: int) -> dict:
+        """
+        This function sets the dial value.
 
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        api_call = f'dial/{uid}/backlight'
+        params = f'&red={red}&green={green}&blue={blue}'
 
+        try:
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, None)
+        except Exception as exc:
+            raise exc
 
+        return r
 
+    def set_dial_background(self, api_version: str, file: str) -> dict:
+        """
+        This function sets the dial value.
 
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        api_call = f'dial/{uid}/image/set'
+        params = ''
 
+        try:
+            with open(f'{file}', 'rb') as file:
+                files = {'imgfile': file}
 
-    # def get_dial_info(self, uid: str) -> dict:
-    #     """
-    #     This function gets the vu-dial information.
+                r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+                r = self.send_http_request(r_uri, files)
+        except Exception as exc:
+            raise exc
 
-    #     :param uid: str, the uid of the vu-dial.
-    #     :return result: dict, returns the request query result.
-    #     """
-    #     api_uri = f'/api/v0/dial/{uid}/status'
+        return r
 
-    #     try:
-    #         r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}')
-    #     except Exception as exc:
-    #         raise exc
+    def get_dial_image_crc(self, api_version: str, uid: str) -> dict:
+        """
+        This function sets the dial value.
 
-    #     return json.loads(r.text)
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        api_call = f'dial/{uid}/image/crc'
+        params = ''
 
-    # def set_dial_value(self, uid: str, value: int) -> dict:
-    #     """
-    #     This function sets the vu-dial position.
+        try:
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, None)
+        except Exception as exc:
+            raise exc
 
-    #     :param uid: str, the uid of the vu-dial.
-    #     :param value: int, value of dial position between 0 and 100.
-    #     :return result: dict, returns the request query result.
-    #     """
-    #     api_uri = f'/api/v0/dial/{uid}/set'
+        return r
 
-    #     try:
-    #         r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}&value={value}')
-    #     except Exception as exc:
-    #         raise exc
+    def set_dial_name(self, api_version: str, uid: str, name: str) -> dict:
+        """
+        This function sets the dial value.
 
-    #     return json.loads(r.text)
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        api_call = f'dial/{uid}/name'
+        params = f'&name={name}'
 
-    # def set_dial_color(self, uid: str, red: int, green: int, blue: int) -> dict:
-    #     """
-    #     This function sets the dial color.
+        try:
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, None)
+        except Exception as exc:
+            raise exc
 
-    #     :param uid: str, the uid of the vu-dial.
-    #     :param red: int, the brightness of the red led - from 0 to 100.
-    #     :param green: the brightness of the green led - from 0 to 100.
-    #     :param blue: the brightness of the blue led - from 0 to 100.
-    #     :return result: dict, returns the request query result.
-    #     """
+        return r
 
-    #     api_uri = f'/api/v0/dial/{uid}/backlight'
+    def reload_hw_info(self, api_version: str, uid: str) -> dict:
+        """
+        This function sets the dial value.
 
-    #     try:
-    #         r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}&red={red}&green={green}&blue={blue}')
-    #     except Exception as exc:
-    #         raise exc
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        api_call = f'dial/{uid}/reload'
+        params = ''
 
-    #     return json.loads(r.text)
-    
-    # def set_dial_background(self, uid: str, file: str) -> dict:
-    #     """
-    #     This function sets the dial background image from PNG file.
+        try:
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, None)
+        except Exception as exc:
+            raise exc
 
-    #     :param uid: str, the uid of the vu-dial.
-    #     :param file: str, the full path to the file to upload. Example: '/home/user/sample.png'
-    #     :return result: dict, returns the request query result.
-    #     """
+        return r
 
-    #     api_uri = f'/api/v0/dial/{uid}/image/set'
+    def set_dial_easing(self, api_version: str, uid: str, period: int, step: int) -> dict:
+        """
+        This function sets the dial value.
 
-    #     try:
-    #         with open(f'{file}', 'rb') as file:
-    #             files = {'imgfile': file}
-    #             r = requests.post(f'{self.server_url}/{api_uri}?key={self.key}', files=files)
-    #     except Exception as exc:
-    #         raise exc
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        api_call = f'dial/{uid}/easing/dial'
+        params = f'&period={period}&step={step}'
 
-    #     return json.loads(r.text)
+        try:
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, None)
+        except Exception as exc:
+            raise exc
 
-    # def get_dial_image_crc(self, uid: str) -> dict:
-    #     """
-    #     This function gets the vu-dial image crc.
+        return r
 
-    #     :param uid: str, the uid of the vu-dial.
-    #     :return result: dict, returns the request query result.
-    #     """
-    #     api_uri = f'/api/v0/dial/{uid}/image/crc'
+    def set_backlight_easing(self, api_version: str, uid: str, period: int, step: int) -> dict:
+        """
+        This function sets the dial value.
 
-    #     try:
-    #         r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}')
-    #     except Exception as exc:
-    #         raise exc
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        api_call = f'dial/{uid}/easing/backlight'
+        params = f'&period={period}&step={step}'
 
-    #     return json.loads(r.text)
+        try:
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, None)
+        except Exception as exc:
+            raise exc
 
-    # def set_dial_name(self, uid: str, name: str) -> dict:
-    #     """
-    #     This function sets the vu-dial name.
+        return r
 
-    #     :param uid: str, the uid of the vu-dial.
-    #     :param name: str, the name of the vu-dial you wish to apply.
-    #     :return result: dict, returns the request query result.
-    #     """
-    #     api_uri = f'/api/v0/dial/{uid}/name'
+    def get_easing_config(self, api_version: str, uid: str) -> dict:
+        """
+        This function sets the dial value.
 
-    #     try:
-    #         r = requests.get(f'{self.server_url}/{api_uri}?key={self.key}&name={name}')
-    #     except Exception as exc:
-    #         raise exc
+        :param uid: str, the uid of the vu-dial.
+        :return result: dict, returns the request query result.
+        """
+        api_call = f'dial/{uid}/easing/get'
+        params = ''
 
-    #     return json.loads(r.text)
+        try:
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, None)
+        except Exception as exc:
+            raise exc
+
+        return r
+
+class VUAdmin(VUAdminUtil):
+    def __init__(self, server_address: str, server_port: int, admin_key: str):
+        """
+        Initialize the class with required values.
+        
+        :param server_address: str, the server ip address.
+        :param server_port: int, the vu-dial server port.
+        :param api_key: str, a valid api key for the vu-dial server.
+        """
+        self.server_url = f'http://{server_address}:{server_port}'
+        self.key        = admin_key
+
+    def provision_dials(self, api_version) -> dict:
+        """
+        This function list the connected vu-dials.
+
+        :return result: dict, returns the request query result.
+        """
+        api_call = 'dial/provision'
+        params = ''
+        method = 'get'
+
+        try:
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, method)
+        except Exception as exc:
+            raise exc
+
+        return r
+
+    def list_api_keys(self, api_version) -> dict:
+        """
+        This function list the connected vu-dials.
+
+        :return result: dict, returns the request query result.
+        """
+        api_call = 'admin/keys/list'
+        params = ''
+        method = 'get'
+
+        try:
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, method)
+        except Exception as exc:
+            raise exc
+
+        return r
+
+    def remove_api_key(self, api_version, target_key: str) -> dict:
+        """
+        This function list the connected vu-dials.
+
+        :return result: dict, returns the request query result.
+        """
+        api_call = 'admin/keys/remove'
+        params = f'&key={target_key}'
+        method = 'get'
+
+        try:
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, method)
+        except Exception as exc:
+            raise exc
+
+        return r
+
+    def create_api_key(self, api_version, name: str, dials: str) -> dict:
+        """
+        This function list the connected vu-dials.
+
+        :return result: dict, returns the request query result.
+        """
+        api_call = 'admin/keys/create'
+        params = f'&name={name}&dials={dials}'
+        method = 'post'
+
+        try:
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, method)
+        except Exception as exc:
+            raise exc
+
+        return r
+
+    def update_api_key(self, api_version, name: str, target_key: str, dials: str) -> dict:
+        """
+        This function list the connected vu-dials.
+
+        :return result: dict, returns the request query result.
+        """
+        api_call = 'admin/keys/update'
+        params = f'&key={target_key}&name={name}&dials={dials}'
+        method = 'get'
+
+        try:
+            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r = self.send_http_request(r_uri, method)
+        except Exception as exc:
+            raise exc
+
+        return r
