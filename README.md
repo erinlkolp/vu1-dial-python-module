@@ -33,13 +33,20 @@ from vudials_client import vudialsclient
 
 dial_uid       = os.environ['TARGET_DIAL_UID']
 server_key     = os.environ['API_KEY']
-srv_address    = os.environ['VU1_SERVER_ADDRESS']
-srv_port       = os.environ['VU1_SERVER_PORT']
+admin_key      = os.environ['ADMIN_API_KEY']
+server_address = os.environ['VU1_SERVER_ADDRESS']
+server_port    = os.environ['VU1_SERVER_PORT']
 
-vu_meter  = vudialsclient.VUDial(srv_address, srv_port, server_key)
+vuserver_api_version = 'v0'
 
-result = vu_meter.get_dial_image_crc(dial_uid)
-print(result)
+vu_meter  = vudialsclient.VUDial(server_address, server_port, server_key)
+admin_api  = vudialsclient.VUAdmin(server_address, server_port, admin_key)
+
+dial_list = vu_meter.list_dials(vuserver_api_version)
+print(dial_list)
+
+api_key_list = admin_api.list_api_keys(vuserver_api_version)
+print(api_key_list)
 ```
 
 ## Documentation
@@ -50,10 +57,10 @@ For detailed documentation, see [the official documentation](https://github.com/
 
 #### `VUDial`
 
-The primary class for interacting with the module.
+The primary class for interacting with the client-side module.
 
 ```python
-vu_meter  = vudialsclient.VUDial(srv_address, srv_port, server_key)
+vu_meter  = vudialsclient.VUDial(server_address, server_port, api_key)
 ```
 
 **Parameters:**
@@ -62,13 +69,37 @@ vu_meter  = vudialsclient.VUDial(srv_address, srv_port, server_key)
 - `api_key` (str): A valid API key for the VU1 Dials Server
 
 **Methods:**
-- `list_dials()`: Processes the given data and returns a result
-- `get_dial_info(uid)`: Saves the current state to a file
-- `set_dial_value(uid, value)`: Sets a dial's value (position)
-- `set_dial_color(uid, red, green, blue)`: Sets a dial's backlight color
-- `set_dial_background(uid, file)`: Sets a dial's background image
-- `get_dial_image_crc(uid)`: Obtains a dial's image CRC
-- `set_dial_name(uid, name)`: Sets a dial's name (no spaces)
+- `list_dials(api_version)`: Processes the given data and returns a result
+- `get_dial_info(api_version, uid)`: Saves the current state to a file
+- `set_dial_value(api_version, uid, value)`: Sets a dial's value (position)
+- `set_dial_color(api_version, uid, red, green, blue)`: Sets a dial's backlight color
+- `set_dial_background(api_version, uid, file)`: Sets a dial's background image
+- `get_dial_image_crc(api_version, uid)`: Obtains a dial's image CRC
+- `set_dial_name(api_version, uid, name)`: Sets a dial's name (no spaces)
+- `reload_hw_info(api_version, uid)`: Reloads dial hardware information
+- `set_dial_easing(api_version, uid, period, step)`: Sets dial easing
+- `set_backlight_easing(api_version, uid, period, step)`: Sets dial easing
+- `get_easing_config(api_version, uid)`: Gets easing config for dial (unsupported as of now)
+
+#### `VUAdmin`
+
+The primary class for interacting with the client-side module.
+
+```python
+admin_api  = vudialsclient.VUAdmin(server_address, server_port, admin_key)
+```
+
+**Parameters:**
+- `server_address` (str): VU1 Dials Server host (ie. localhost)
+- `server_port` (int): VU1 Dials Server port (ie. 5340)
+- `admin_key` (str): A valid Admin API key for the VU1 Dials Server
+
+**Methods:**
+- `provision_dials(api_version)`: Provisions new dial hardware
+- `list_api_keys(api_version)`: Lists all VU Server API keys
+- `remove_api_key(api_version, target_key)`: Removes an API key
+- `create_api_key(api_version, name, dials)`: Creates an API key (see value in return)
+- `update_api_key(api_version, name, target_key, dials)`: Updates an API key
 
 ## Contributing
 
@@ -88,7 +119,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgements
 
-- Many thanks to everyone who code reviewed!
+- Many thanks to Aaron D. and Christopher K.!
 
 ## Changelog
 
