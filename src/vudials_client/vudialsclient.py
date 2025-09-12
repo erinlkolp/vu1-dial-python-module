@@ -9,9 +9,9 @@ logging.basicConfig(
 LOGGER = logging.getLogger(__name__)
 
 class VUUtil:
-    def get_uri(self, server_url: str, api_key: str, api_version: str, api_call: str, keyword_params: str) -> str:        
+    def get_uri(self, server_url: str, api_key: str, api_call: str, keyword_params: str) -> str:        
         try:
-            api_base = f'{server_url}/api/{api_version}/{api_call}?key={api_key}{keyword_params}'
+            api_base = f'{server_url}/api/v0/{api_call}?key={api_key}{keyword_params}'
         except Exception as exc:
             raise exc
 
@@ -29,9 +29,9 @@ class VUUtil:
         return r
     
 class VUAdminUtil:
-    def get_uri(self, server_url: str, api_key: str, api_version: str, api_call: str, keyword_params: str) -> str:        
+    def get_uri(self, server_url: str, api_key: str, api_call: str, keyword_params: str) -> str:        
         try:
-            api_base = f'{server_url}/api/{api_version}/{api_call}?admin_key={api_key}{keyword_params}'
+            api_base = f'{server_url}/api/v0/{api_call}?admin_key={api_key}{keyword_params}'
         except Exception as exc:
             raise exc
 
@@ -60,7 +60,7 @@ class VUDial(VUUtil):
         self.server_url = f'http://{server_address}:{server_port}'
         self.key        = api_key
 
-    def list_dials(self, api_version) -> dict:
+    def list_dials(self) -> dict:
         """
         This function list the connected vu-dials.
 
@@ -70,14 +70,14 @@ class VUDial(VUUtil):
         params = ''
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, None)
         except Exception as exc:
             raise exc
 
         return r
 
-    def get_dial_info(self, api_version: str, uid: str) -> dict:
+    def get_dial_info(self, uid: str) -> dict:
         """
         This function gets the vu-dial information.
 
@@ -88,14 +88,14 @@ class VUDial(VUUtil):
         params = ''
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, None)
         except Exception as exc:
             raise exc
 
         return r
 
-    def set_dial_value(self, api_version: str, uid: str, value: int) -> dict:
+    def set_dial_value(self, uid: str, value: int) -> dict:
         """
         This function sets the dial value.
 
@@ -106,14 +106,14 @@ class VUDial(VUUtil):
         params = f'&value={value}'
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, None)
         except Exception as exc:
             raise exc
 
         return r
 
-    def set_dial_color(self, api_version: str, uid: str, red: int, green: int, blue: int) -> dict:
+    def set_dial_color(self, uid: str, red: int, green: int, blue: int) -> dict:
         """
         This function sets the dial value.
 
@@ -124,14 +124,14 @@ class VUDial(VUUtil):
         params = f'&red={red}&green={green}&blue={blue}'
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, None)
         except Exception as exc:
             raise exc
 
         return r
 
-    def set_dial_background(self, api_version: str, file: str) -> dict:
+    def set_dial_background(self, file: str) -> dict:
         """
         This function sets the dial value.
 
@@ -145,14 +145,14 @@ class VUDial(VUUtil):
             with open(f'{file}', 'rb') as file:
                 files = {'imgfile': file}
 
-                r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+                r_uri = self.get_uri(self.server_url, self.key, api_call, params)
                 r = self.send_http_request(r_uri, files)
         except Exception as exc:
             raise exc
 
         return r
 
-    def get_dial_image_crc(self, api_version: str, uid: str) -> dict:
+    def get_dial_image_crc(self, uid: str) -> dict:
         """
         This function sets the dial value.
 
@@ -163,14 +163,14 @@ class VUDial(VUUtil):
         params = ''
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, None)
         except Exception as exc:
             raise exc
 
         return r
 
-    def set_dial_name(self, api_version: str, uid: str, name: str) -> dict:
+    def set_dial_name(self, uid: str, name: str) -> dict:
         """
         This function sets the dial value.
 
@@ -181,14 +181,14 @@ class VUDial(VUUtil):
         params = f'&name={name}'
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, None)
         except Exception as exc:
             raise exc
 
         return r
 
-    def reload_hw_info(self, api_version: str, uid: str) -> dict:
+    def reload_hw_info(self, uid: str) -> dict:
         """
         This function sets the dial value.
 
@@ -199,14 +199,14 @@ class VUDial(VUUtil):
         params = ''
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, None)
         except Exception as exc:
             raise exc
 
         return r
 
-    def set_dial_easing(self, api_version: str, uid: str, period: int, step: int) -> dict:
+    def set_dial_easing(self, uid: str, period: int, step: int) -> dict:
         """
         This function sets the dial value.
 
@@ -217,14 +217,14 @@ class VUDial(VUUtil):
         params = f'&period={period}&step={step}'
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, None)
         except Exception as exc:
             raise exc
 
         return r
 
-    def set_backlight_easing(self, api_version: str, uid: str, period: int, step: int) -> dict:
+    def set_backlight_easing(self, uid: str, period: int, step: int) -> dict:
         """
         This function sets the dial value.
 
@@ -235,14 +235,14 @@ class VUDial(VUUtil):
         params = f'&period={period}&step={step}'
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, None)
         except Exception as exc:
             raise exc
 
         return r
 
-    def get_easing_config(self, api_version: str, uid: str) -> dict:
+    def get_easing_config(self, uid: str) -> dict:
         """
         This function sets the dial value.
 
@@ -253,7 +253,7 @@ class VUDial(VUUtil):
         params = ''
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, None)
         except Exception as exc:
             raise exc
@@ -272,7 +272,7 @@ class VUAdmin(VUAdminUtil):
         self.server_url = f'http://{server_address}:{server_port}'
         self.key        = admin_key
 
-    def provision_dials(self, api_version) -> dict:
+    def provision_dials(self) -> dict:
         """
         This function list the connected vu-dials.
 
@@ -283,14 +283,14 @@ class VUAdmin(VUAdminUtil):
         method = 'get'
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, method)
         except Exception as exc:
             raise exc
 
         return r
 
-    def list_api_keys(self, api_version) -> dict:
+    def list_api_keys(self) -> dict:
         """
         This function list the connected vu-dials.
 
@@ -301,14 +301,14 @@ class VUAdmin(VUAdminUtil):
         method = 'get'
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, method)
         except Exception as exc:
             raise exc
 
         return r
 
-    def remove_api_key(self, api_version, target_key: str) -> dict:
+    def remove_api_key(self, target_key: str) -> dict:
         """
         This function list the connected vu-dials.
 
@@ -319,14 +319,14 @@ class VUAdmin(VUAdminUtil):
         method = 'get'
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, method)
         except Exception as exc:
             raise exc
 
         return r
 
-    def create_api_key(self, api_version, name: str, dials: str) -> dict:
+    def create_api_key(self, name: str, dials: str) -> dict:
         """
         This function list the connected vu-dials.
 
@@ -337,14 +337,14 @@ class VUAdmin(VUAdminUtil):
         method = 'post'
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, method)
         except Exception as exc:
             raise exc
 
         return r
 
-    def update_api_key(self, api_version, name: str, target_key: str, dials: str) -> dict:
+    def update_api_key(self, name: str, target_key: str, dials: str) -> dict:
         """
         This function list the connected vu-dials.
 
@@ -355,7 +355,7 @@ class VUAdmin(VUAdminUtil):
         method = 'get'
 
         try:
-            r_uri = self.get_uri(self.server_url, self.key, api_version, api_call, params)
+            r_uri = self.get_uri(self.server_url, self.key, api_call, params)
             r = self.send_http_request(r_uri, method)
         except Exception as exc:
             raise exc
