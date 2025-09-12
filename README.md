@@ -13,7 +13,7 @@ A Python client module for Streacom's VU1 Dial development hardware. This provid
 ## Installation
 
 ```bash
-pip install vudials_client --extra-index-url https://test.pypi.org/simple/
+pip install vudials-client
 ```
 
 For development installation:
