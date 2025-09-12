@@ -37,15 +37,13 @@ admin_key      = os.environ['ADMIN_API_KEY']
 server_address = os.environ['VU1_SERVER_ADDRESS']
 server_port    = os.environ['VU1_SERVER_PORT']
 
-vuserver_api_version = 'v0'
-
 vu_meter  = vudialsclient.VUDial(server_address, server_port, server_key)
 admin_api  = vudialsclient.VUAdmin(server_address, server_port, admin_key)
 
-dial_list = vu_meter.list_dials(vuserver_api_version)
+dial_list = vu_meter.list_dials()
 print(dial_list)
 
-api_key_list = admin_api.list_api_keys(vuserver_api_version)
+api_key_list = admin_api.list_api_keys()
 print(api_key_list)
 ```
 
@@ -69,17 +67,17 @@ vu_meter  = vudialsclient.VUDial(server_address, server_port, api_key)
 - `api_key` (str): A valid API key for the VU1 Dials Server
 
 **Methods:**
-- `list_dials(api_version)`: Processes the given data and returns a result
-- `get_dial_info(api_version, uid)`: Saves the current state to a file
-- `set_dial_value(api_version, uid, value)`: Sets a dial's value (position)
-- `set_dial_color(api_version, uid, red, green, blue)`: Sets a dial's backlight color
-- `set_dial_background(api_version, uid, file)`: Sets a dial's background image
-- `get_dial_image_crc(api_version, uid)`: Obtains a dial's image CRC
-- `set_dial_name(api_version, uid, name)`: Sets a dial's name (no spaces)
-- `reload_hw_info(api_version, uid)`: Reloads dial hardware information
-- `set_dial_easing(api_version, uid, period, step)`: Sets dial easing
-- `set_backlight_easing(api_version, uid, period, step)`: Sets dial easing
-- `get_easing_config(api_version, uid)`: Gets easing config for dial (unsupported as of now)
+- `list_dials()`: Processes the given data and returns a result
+- `get_dial_info(uid)`: Saves the current state to a file
+- `set_dial_value(uid, value)`: Sets a dial's value (position)
+- `set_dial_color(uid, red, green, blue)`: Sets a dial's backlight color
+- `set_dial_background(uid, file)`: Sets a dial's background image
+- `get_dial_image_crc(uid)`: Obtains a dial's image CRC
+- `set_dial_name(uid, name)`: Sets a dial's name (no spaces)
+- `reload_hw_info(uid)`: Reloads dial hardware information
+- `set_dial_easing(uid, period, step)`: Sets dial easing
+- `set_backlight_easing(uid, period, step)`: Sets dial easing
+- `get_easing_config(uid)`: Gets easing config for dial (unsupported as of now)
 
 #### `VUAdmin`
 
@@ -95,11 +93,11 @@ admin_api  = vudialsclient.VUAdmin(server_address, server_port, admin_key)
 - `admin_key` (str): A valid Admin API key for the VU1 Dials Server
 
 **Methods:**
-- `provision_dials(api_version)`: Provisions new dial hardware
-- `list_api_keys(api_version)`: Lists all VU Server API keys
-- `remove_api_key(api_version, target_key)`: Removes an API key
-- `create_api_key(api_version, name, dials)`: Creates an API key (see value in return)
-- `update_api_key(api_version, name, target_key, dials)`: Updates an API key
+- `provision_dials()`: Provisions new dial hardware
+- `list_api_keys()`: Lists all VU Server API keys
+- `remove_api_key(target_key)`: Removes an API key
+- `create_api_key(name, dials)`: Creates an API key (see value in return)
+- `update_api_key(name, target_key, dials)`: Updates an API key
 
 ## Contributing
 
