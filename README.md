@@ -1,6 +1,6 @@
 # vudials_client
 
-[![PyPI version](https://badge.fury.io/py/vudials-client.svg)](https://badge.fury.io/py/vudials-client)
+[![PyPI version](https://badge.fury.io/py/vudials_client.svg)](https://badge.fury.io/py/vudials_client)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A Python client module for Streacom's VU1 Dial development hardware. This provides a simple interface to manipulate multiple dials.
