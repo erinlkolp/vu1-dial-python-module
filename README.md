@@ -31,7 +31,6 @@ Here's a simple example to get you started:
 ```python
 from vudials_client import vudialsclient
 
-dial_uid       = os.environ['TARGET_DIAL_UID']
 server_key     = os.environ['API_KEY']
 admin_key      = os.environ['ADMIN_API_KEY']
 server_address = os.environ['VU1_SERVER_ADDRESS']
@@ -118,15 +117,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgements
 
 - Many thanks to Aaron D. and Christopher K.!
-
-## Changelog
-
-### 2025.3.3 (2025-03-07)
-- Adds documentation
-
-### 2025.3.2 (2025-03-05)
-- Initial release
-- Partial dial api implementation
 
 ## License & Author
 
