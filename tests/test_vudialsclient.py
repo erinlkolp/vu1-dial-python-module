@@ -49,6 +49,12 @@ class TestVUUtilGetUri:
         assert "green=128" in uri
         assert "blue=0" in uri
 
+    def test_key_with_special_chars_url_encoded(self):
+        # A key containing & and = must not break the query string structure.
+        uri = self.util.get_uri("http://localhost:5340", "k&admin_key=evil", "dial/list", "")
+        assert "k%26admin_key%3Devil" in uri
+        assert "admin_key=evil" not in uri
+
 
 class TestVUUtilSendHttpRequest:
     def setup_method(self):
@@ -137,6 +143,12 @@ class TestVUAdminUtilGetUri:
     def test_api_path_format(self):
         uri = self.util.get_uri("http://192.168.0.1:9000", "k", "admin/keys/list", "")
         assert uri.startswith("http://192.168.0.1:9000/api/v0/")
+
+    def test_admin_key_with_special_chars_url_encoded(self):
+        # A key containing & and = must not inject extra query parameters.
+        uri = self.util.get_uri("http://localhost:5340", "a&key=evil", "admin/keys/list", "")
+        assert "a%26key%3Devil" in uri
+        assert "key=evil" not in uri
 
 
 class TestVUAdminUtilSendHttpRequest:

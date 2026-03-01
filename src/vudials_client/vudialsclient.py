@@ -13,7 +13,7 @@ class VUUtil:
         # This means it will appear in server access logs, proxy logs, and
         # HTTP client history. If the server adds header-based authentication
         # in the future, prefer an Authorization or X-API-Key header instead.
-        return f'{server_url}/api/v0/{api_call}?key={api_key}{keyword_params}'
+        return f'{server_url}/api/v0/{api_call}?key={quote(api_key)}{keyword_params}'
 
     def send_http_request(self, path_uri: str, files: dict, timeout: int = 10) -> requests.Response:
         if files is not None:
@@ -27,7 +27,7 @@ class VUUtil:
 class VUAdminUtil:
     def get_uri(self, server_url: str, api_key: str, api_call: str, keyword_params: str) -> str:
         # Security note: See VUUtil.get_uri — same key-in-URL caveat applies.
-        return f'{server_url}/api/v0/{api_call}?admin_key={api_key}{keyword_params}'
+        return f'{server_url}/api/v0/{api_call}?admin_key={quote(api_key)}{keyword_params}'
 
     def send_http_request(self, path_uri: str, method: str, timeout: int = 10) -> requests.Response:
         if method == "post":
