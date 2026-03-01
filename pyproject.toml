@@ -21,6 +21,23 @@ classifiers = [
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "responses>=0.25",
+    "pytest-cov>=5.0",
+]
+
 [project.urls]
 Homepage = "https://github.com/erinlkolp/vu1-dial-python-module"
 Issues = "https://github.com/erinlkolp/vu1-dial-python-module/issues"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["src/vudials_client"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+show_missing = true
