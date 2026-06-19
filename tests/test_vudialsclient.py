@@ -4,7 +4,7 @@ import re
 import pytest
 import responses as resp
 from requests.exceptions import HTTPError
-from unittest.mock import patch, mock_open
+from unittest.mock import patch
 
 from vudials_client.vudialsclient import VUUtil, VUAdminUtil, VUDial, VUAdmin
 
@@ -383,28 +383,28 @@ class TestVUDialSetDialBackground:
     @resp.activate
     def test_success(self, vudial):
         resp.add(resp.POST, f"{BASE}/api/v0/dial/uid1/image/set", json={}, status=200)
-        with patch("builtins.open", mock_open(read_data=b"fake image")):
+        with patch("builtins.open", return_value=io.BytesIO(b"fake image")):
             r = vudial.set_dial_background("uid1", "image.png")
         assert r.status_code == 200
 
     @resp.activate
     def test_uses_post(self, vudial):
         resp.add(resp.POST, f"{BASE}/api/v0/dial/uid1/image/set", json={}, status=200)
-        with patch("builtins.open", mock_open(read_data=b"fake image")):
+        with patch("builtins.open", return_value=io.BytesIO(b"fake image")):
             vudial.set_dial_background("uid1", "image.png")
         assert resp.calls[0].request.method == "POST"
 
     @resp.activate
     def test_correct_endpoint(self, vudial):
         resp.add(resp.POST, f"{BASE}/api/v0/dial/uid1/image/set", json={}, status=200)
-        with patch("builtins.open", mock_open(read_data=b"fake image")):
+        with patch("builtins.open", return_value=io.BytesIO(b"fake image")):
             vudial.set_dial_background("uid1", "image.png")
         assert "/dial/uid1/image/set" in resp.calls[0].request.url
 
     @resp.activate
     def test_http_error_propagates(self, vudial):
         resp.add(resp.POST, f"{BASE}/api/v0/dial/uid1/image/set", status=500)
-        with patch("builtins.open", mock_open(read_data=b"fake image")):
+        with patch("builtins.open", return_value=io.BytesIO(b"fake image")):
             with pytest.raises(HTTPError):
                 vudial.set_dial_background("uid1", "image.png")
 
