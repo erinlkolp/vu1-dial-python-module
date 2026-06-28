@@ -55,6 +55,11 @@ class TestVUUtilGetUri:
         assert "k%26admin_key%3Devil" in uri
         assert "admin_key=evil" not in uri
 
+    def test_api_key_with_slash_url_encoded(self):
+        uri = self.util.get_uri("http://localhost:5340", "key/with/slash", "dial/list", "")
+        assert "key%2Fwith%2Fslash" in uri
+        assert "key/with/slash" not in uri
+
 
 class TestVUUtilSendHttpRequest:
     def setup_method(self):
@@ -150,6 +155,11 @@ class TestVUAdminUtilGetUri:
         assert "a%26key%3Devil" in uri
         assert "key=evil" not in uri
 
+    def test_admin_key_with_slash_url_encoded(self):
+        uri = self.util.get_uri("http://localhost:5340", "key/with/slash", "admin/keys/list", "")
+        assert "key%2Fwith%2Fslash" in uri
+        assert "key/with/slash" not in uri
+
 
 class TestVUAdminUtilSendHttpRequest:
     def setup_method(self):
@@ -169,11 +179,9 @@ class TestVUAdminUtilSendHttpRequest:
         assert resp.calls[0].request.method == "POST"
         assert r.status_code == 200
 
-    @resp.activate
-    def test_non_post_defaults_to_get(self):
-        resp.add(resp.GET, f"{BASE}/api/v0/test", json={}, status=200)
-        self.util.send_http_request(f"{BASE}/api/v0/test", "put")
-        assert resp.calls[0].request.method == "GET"
+    def test_unknown_method_raises_value_error(self):
+        with pytest.raises(ValueError, match="put"):
+            self.util.send_http_request(f"{BASE}/api/v0/test", "put")
 
     @resp.activate
     def test_raises_on_404(self):
@@ -470,6 +478,14 @@ class TestVUDialSetDialName:
         assert "My%20Dial" in url or "My+Dial" in url
 
     @resp.activate
+    def test_name_slash_url_encoded(self, vudial):
+        resp.add(resp.GET, f"{BASE}/api/v0/dial/uid1/name", json={}, status=200)
+        vudial.set_dial_name("uid1", "My/Dial")
+        url = resp.calls[0].request.url
+        assert "My%2FDial" in url
+        assert "My/Dial" not in url
+
+    @resp.activate
     def test_http_error_propagates(self, vudial):
         resp.add(resp.GET, f"{BASE}/api/v0/dial/uid1/name", status=400)
         with pytest.raises(HTTPError):
@@ -705,6 +721,14 @@ class TestVUAdminRemoveApiKey:
         assert "key+with+spaces" in url or "key%20with%20spaces" in url
 
     @resp.activate
+    def test_target_key_slash_url_encoded(self, vuadmin):
+        resp.add(resp.GET, f"{BASE}/api/v0/admin/keys/remove", json={}, status=200)
+        vuadmin.remove_api_key("key/with/slash")
+        url = resp.calls[0].request.url
+        assert "key%2Fwith%2Fslash" in url
+        assert "key/with/slash" not in url
+
+    @resp.activate
     def test_http_error_propagates(self, vuadmin):
         resp.add(resp.GET, f"{BASE}/api/v0/admin/keys/remove", status=404)
         with pytest.raises(HTTPError):
@@ -744,6 +768,14 @@ class TestVUAdminCreateApiKey:
         assert "dials=" in url
 
     @resp.activate
+    def test_name_slash_url_encoded(self, vuadmin):
+        resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/create", json={}, status=200)
+        vuadmin.create_api_key("my/key", "all")
+        url = resp.calls[0].request.url
+        assert "name=my%2Fkey" in url
+        assert "name=my/key" not in url
+
+    @resp.activate
     def test_http_error_propagates(self, vuadmin):
         resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/create", status=400)
         with pytest.raises(HTTPError):
@@ -758,25 +790,25 @@ class TestVUAdminCreateApiKey:
 class TestVUAdminUpdateApiKey:
     @resp.activate
     def test_success(self, vuadmin):
-        resp.add(resp.GET, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
+        resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
         r = vuadmin.update_api_key("newname", "existing-key", "all")
         assert r.status_code == 200
 
     @resp.activate
     def test_correct_endpoint(self, vuadmin):
-        resp.add(resp.GET, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
+        resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
         vuadmin.update_api_key("newname", "existing-key", "all")
         assert "/api/v0/admin/keys/update" in resp.calls[0].request.url
 
     @resp.activate
-    def test_uses_get(self, vuadmin):
-        resp.add(resp.GET, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
+    def test_uses_post(self, vuadmin):
+        resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
         vuadmin.update_api_key("newname", "existing-key", "all")
-        assert resp.calls[0].request.method == "GET"
+        assert resp.calls[0].request.method == "POST"
 
     @resp.activate
     def test_correct_params(self, vuadmin):
-        resp.add(resp.GET, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
+        resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
         vuadmin.update_api_key("newname", "existing-key", "all")
         url = resp.calls[0].request.url
         assert "name=newname" in url
@@ -784,7 +816,15 @@ class TestVUAdminUpdateApiKey:
         assert "dials=all" in url
 
     @resp.activate
+    def test_name_slash_url_encoded(self, vuadmin):
+        resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
+        vuadmin.update_api_key("new/name", "existing-key", "all")
+        url = resp.calls[0].request.url
+        assert "name=new%2Fname" in url
+        assert "name=new/name" not in url
+
+    @resp.activate
     def test_http_error_propagates(self, vuadmin):
-        resp.add(resp.GET, f"{BASE}/api/v0/admin/keys/update", status=404)
+        resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/update", status=404)
         with pytest.raises(HTTPError):
             vuadmin.update_api_key("name", "no-such-key", "all")
