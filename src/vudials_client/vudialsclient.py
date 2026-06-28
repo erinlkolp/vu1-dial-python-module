@@ -13,7 +13,7 @@ class VUUtil:
         # This means it will appear in server access logs, proxy logs, and
         # HTTP client history. If the server adds header-based authentication
         # in the future, prefer an Authorization or X-API-Key header instead.
-        return f'{server_url}/api/v0/{api_call}?key={quote(api_key)}{keyword_params}'
+        return f'{server_url}/api/v0/{api_call}?key={quote(api_key, safe="")}{keyword_params}'
 
     def send_http_request(self, path_uri: str, files: dict, timeout: int = 10) -> requests.Response:
         if files is not None:
@@ -27,13 +27,15 @@ class VUUtil:
 class VUAdminUtil:
     def get_uri(self, server_url: str, api_key: str, api_call: str, keyword_params: str) -> str:
         # Security note: See VUUtil.get_uri — same key-in-URL caveat applies.
-        return f'{server_url}/api/v0/{api_call}?admin_key={quote(api_key)}{keyword_params}'
+        return f'{server_url}/api/v0/{api_call}?admin_key={quote(api_key, safe="")}{keyword_params}'
 
     def send_http_request(self, path_uri: str, method: str, timeout: int = 10) -> requests.Response:
         if method == "post":
             r = requests.post(path_uri, timeout=timeout)
-        else:
+        elif method == "get":
             r = requests.get(path_uri, timeout=timeout)
+        else:
+            raise ValueError(f"Unsupported HTTP method: {method!r}")
         r.raise_for_status()
         return r
 
@@ -136,7 +138,7 @@ class VUDial(VUUtil):
         :return: requests.Response
         """
         api_call = f'dial/{quote(uid, safe="")}/name'
-        params = f'&name={quote(name)}'
+        params = f'&name={quote(name, safe="")}'
         r_uri = self.get_uri(self.server_url, self.key, api_call, params)
         return self.send_http_request(r_uri, None)
 
@@ -232,7 +234,7 @@ class VUAdmin(VUAdminUtil):
         :param target_key: str, the key to remove.
         :return: requests.Response
         """
-        params = f'&key={quote(target_key)}'
+        params = f'&key={quote(target_key, safe="")}'
         r_uri = self.get_uri(self.server_url, self.key, 'admin/keys/remove', params)
         return self.send_http_request(r_uri, 'get')
 
@@ -244,7 +246,7 @@ class VUAdmin(VUAdminUtil):
         :param dials: str, the dials to associate with the key.
         :return: requests.Response
         """
-        params = f'&name={quote(name)}&dials={quote(dials)}'
+        params = f'&name={quote(name, safe="")}&dials={quote(dials, safe="")}'
         r_uri = self.get_uri(self.server_url, self.key, 'admin/keys/create', params)
         return self.send_http_request(r_uri, 'post')
 
@@ -257,6 +259,6 @@ class VUAdmin(VUAdminUtil):
         :param dials: str, the updated dials to associate.
         :return: requests.Response
         """
-        params = f'&key={quote(target_key)}&name={quote(name)}&dials={quote(dials)}'
+        params = f'&key={quote(target_key, safe="")}&name={quote(name, safe="")}&dials={quote(dials, safe="")}'
         r_uri = self.get_uri(self.server_url, self.key, 'admin/keys/update', params)
-        return self.send_http_request(r_uri, 'get')
+        return self.send_http_request(r_uri, 'post')
