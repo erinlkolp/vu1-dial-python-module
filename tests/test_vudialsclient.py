@@ -324,6 +324,12 @@ class TestVUDialSetDialValue:
         assert "value=0" in resp.calls[0].request.url
 
     @resp.activate
+    def test_uid_url_encoded(self, vudial):
+        resp.add(resp.GET, re.compile(r".*uid%2Fspecial.*"), json={}, status=200)
+        vudial.set_dial_value("uid/special", 50)
+        assert "uid%2Fspecial" in resp.calls[0].request.url
+
+    @resp.activate
     def test_http_error_propagates(self, vudial):
         resp.add(resp.GET, f"{BASE}/api/v0/dial/uid1/set", status=500)
         with pytest.raises(HTTPError):
@@ -376,6 +382,12 @@ class TestVUDialSetDialColor:
         assert "blue=255" in url
 
     @resp.activate
+    def test_uid_url_encoded(self, vudial):
+        resp.add(resp.GET, re.compile(r".*uid%2Fspecial.*"), json={}, status=200)
+        vudial.set_dial_color("uid/special", 255, 0, 0)
+        assert "uid%2Fspecial" in resp.calls[0].request.url
+
+    @resp.activate
     def test_http_error_propagates(self, vudial):
         resp.add(resp.GET, f"{BASE}/api/v0/dial/uid1/backlight", status=500)
         with pytest.raises(HTTPError):
@@ -416,6 +428,14 @@ class TestVUDialSetDialBackground:
             with pytest.raises(HTTPError):
                 vudial.set_dial_background("uid1", "image.png")
 
+    @resp.activate
+    def test_uid_url_encoded(self, vudial):
+        resp.add(resp.POST, re.compile(r".*uid%2Fspecial.*"), json={}, status=200)
+        with patch("builtins.open", return_value=io.BytesIO(b"fake image")):
+            vudial.set_dial_background("uid/special", "image.png")
+        assert "uid%2Fspecial" in resp.calls[0].request.url
+
+    @resp.activate
     def test_missing_file_raises(self, vudial):
         with pytest.raises(FileNotFoundError):
             vudial.set_dial_background("uid1", "/nonexistent/path/image.png")
@@ -438,6 +458,12 @@ class TestVUDialGetDialImageCrc:
         resp.add(resp.GET, f"{BASE}/api/v0/dial/uid1/image/crc", json={}, status=200)
         vudial.get_dial_image_crc("uid1")
         assert "/dial/uid1/image/crc" in resp.calls[0].request.url
+
+    @resp.activate
+    def test_uid_url_encoded(self, vudial):
+        resp.add(resp.GET, re.compile(r".*uid%2Fspecial.*"), json={}, status=200)
+        vudial.get_dial_image_crc("uid/special")
+        assert "uid%2Fspecial" in resp.calls[0].request.url
 
     @resp.activate
     def test_http_error_propagates(self, vudial):
@@ -471,11 +497,17 @@ class TestVUDialSetDialName:
         assert "name=TestName" in resp.calls[0].request.url
 
     @resp.activate
+    def test_uid_url_encoded(self, vudial):
+        resp.add(resp.GET, re.compile(r".*uid%2Fspecial.*"), json={}, status=200)
+        vudial.set_dial_name("uid/special", "Name")
+        assert "uid%2Fspecial" in resp.calls[0].request.url
+
+    @resp.activate
     def test_name_url_encoded(self, vudial):
         resp.add(resp.GET, f"{BASE}/api/v0/dial/uid1/name", json={}, status=200)
         vudial.set_dial_name("uid1", "My Dial")
         url = resp.calls[0].request.url
-        assert "My%20Dial" in url or "My+Dial" in url
+        assert "My%20Dial" in url
 
     @resp.activate
     def test_name_slash_url_encoded(self, vudial):
@@ -511,6 +543,12 @@ class TestVUDialReloadHwInfo:
         assert "/dial/uid1/reload" in resp.calls[0].request.url
 
     @resp.activate
+    def test_uid_url_encoded(self, vudial):
+        resp.add(resp.GET, re.compile(r".*uid%2Fspecial.*"), json={}, status=200)
+        vudial.reload_hw_info("uid/special")
+        assert "uid%2Fspecial" in resp.calls[0].request.url
+
+    @resp.activate
     def test_http_error_propagates(self, vudial):
         resp.add(resp.GET, f"{BASE}/api/v0/dial/uid1/reload", status=500)
         with pytest.raises(HTTPError):
@@ -542,6 +580,12 @@ class TestVUDialSetDialEasing:
         url = resp.calls[0].request.url
         assert "period=100" in url
         assert "step=5" in url
+
+    @resp.activate
+    def test_uid_url_encoded(self, vudial):
+        resp.add(resp.GET, re.compile(r".*uid%2Fspecial.*"), json={}, status=200)
+        vudial.set_dial_easing("uid/special", 100, 5)
+        assert "uid%2Fspecial" in resp.calls[0].request.url
 
     @resp.activate
     def test_http_error_propagates(self, vudial):
@@ -577,6 +621,12 @@ class TestVUDialSetBacklightEasing:
         assert "step=10" in url
 
     @resp.activate
+    def test_uid_url_encoded(self, vudial):
+        resp.add(resp.GET, re.compile(r".*uid%2Fspecial.*"), json={}, status=200)
+        vudial.set_backlight_easing("uid/special", 200, 10)
+        assert "uid%2Fspecial" in resp.calls[0].request.url
+
+    @resp.activate
     def test_http_error_propagates(self, vudial):
         resp.add(resp.GET, f"{BASE}/api/v0/dial/uid1/easing/backlight", status=500)
         with pytest.raises(HTTPError):
@@ -600,6 +650,12 @@ class TestVUDialGetEasingConfig:
         resp.add(resp.GET, f"{BASE}/api/v0/dial/uid1/easing/get", json={}, status=200)
         vudial.get_easing_config("uid1")
         assert "/dial/uid1/easing/get" in resp.calls[0].request.url
+
+    @resp.activate
+    def test_uid_url_encoded(self, vudial):
+        resp.add(resp.GET, re.compile(r".*uid%2Fspecial.*"), json={}, status=200)
+        vudial.get_easing_config("uid/special")
+        assert "uid%2Fspecial" in resp.calls[0].request.url
 
     @resp.activate
     def test_http_error_propagates(self, vudial):
@@ -718,7 +774,7 @@ class TestVUAdminRemoveApiKey:
         resp.add(resp.GET, f"{BASE}/api/v0/admin/keys/remove", json={}, status=200)
         vuadmin.remove_api_key("key with spaces")
         url = resp.calls[0].request.url
-        assert "key+with+spaces" in url or "key%20with%20spaces" in url
+        assert "key%20with%20spaces" in url
 
     @resp.activate
     def test_target_key_slash_url_encoded(self, vuadmin):
@@ -762,15 +818,15 @@ class TestVUAdminCreateApiKey:
     @resp.activate
     def test_correct_params(self, vuadmin):
         resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/create", json={}, status=200)
-        vuadmin.create_api_key("mykey", "dial1,dial2")
+        vuadmin.create_api_key("mykey", ["uid1", "uid2"])
         url = resp.calls[0].request.url
         assert "name=mykey" in url
-        assert "dials=" in url
+        assert "dials=uid1%3Buid2" in url
 
     @resp.activate
     def test_name_slash_url_encoded(self, vuadmin):
         resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/create", json={}, status=200)
-        vuadmin.create_api_key("my/key", "all")
+        vuadmin.create_api_key("my/key", ["all"])
         url = resp.calls[0].request.url
         assert "name=my%2Fkey" in url
         assert "name=my/key" not in url
@@ -791,40 +847,48 @@ class TestVUAdminUpdateApiKey:
     @resp.activate
     def test_success(self, vuadmin):
         resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
-        r = vuadmin.update_api_key("newname", "existing-key", "all")
+        r = vuadmin.update_api_key("newname", "existing-key", ["all"])
         assert r.status_code == 200
 
     @resp.activate
     def test_correct_endpoint(self, vuadmin):
         resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
-        vuadmin.update_api_key("newname", "existing-key", "all")
+        vuadmin.update_api_key("newname", "existing-key", ["all"])
         assert "/api/v0/admin/keys/update" in resp.calls[0].request.url
 
     @resp.activate
     def test_uses_post(self, vuadmin):
         resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
-        vuadmin.update_api_key("newname", "existing-key", "all")
+        vuadmin.update_api_key("newname", "existing-key", ["all"])
         assert resp.calls[0].request.method == "POST"
 
     @resp.activate
     def test_correct_params(self, vuadmin):
         resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
-        vuadmin.update_api_key("newname", "existing-key", "all")
+        vuadmin.update_api_key("newname", "existing-key", ["uid1", "uid2"])
         url = resp.calls[0].request.url
         assert "name=newname" in url
         assert "key=existing-key" in url
-        assert "dials=all" in url
+        assert "dials=uid1%3Buid2" in url
 
     @resp.activate
     def test_name_slash_url_encoded(self, vuadmin):
         resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
-        vuadmin.update_api_key("new/name", "existing-key", "all")
+        vuadmin.update_api_key("new/name", "existing-key", ["all"])
         url = resp.calls[0].request.url
         assert "name=new%2Fname" in url
         assert "name=new/name" not in url
 
     @resp.activate
+    def test_target_key_slash_url_encoded(self, vuadmin):
+        resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/update", json={}, status=200)
+        vuadmin.update_api_key("name", "key/with/slash", ["all"])
+        url = resp.calls[0].request.url
+        assert "key%2Fwith%2Fslash" in url
+        assert "key/with/slash" not in url
+
+    @resp.activate
     def test_http_error_propagates(self, vuadmin):
         resp.add(resp.POST, f"{BASE}/api/v0/admin/keys/update", status=404)
         with pytest.raises(HTTPError):
-            vuadmin.update_api_key("name", "no-such-key", "all")
+            vuadmin.update_api_key("name", "no-such-key", ["all"])
