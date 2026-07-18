@@ -16,7 +16,7 @@ class VUUtil:
         return f'{server_url}/api/v0/{api_call}?key={quote(api_key, safe="")}{keyword_params}'
 
     def send_http_request(self, path_uri: str, files: dict, timeout: int = 10) -> requests.Response:
-        if files is not None:
+        if files:
             r = requests.post(path_uri, files=files, timeout=timeout)
         else:
             r = requests.get(path_uri, timeout=timeout)
@@ -30,6 +30,7 @@ class VUAdminUtil:
         return f'{server_url}/api/v0/{api_call}?admin_key={quote(api_key, safe="")}{keyword_params}'
 
     def send_http_request(self, path_uri: str, method: str, timeout: int = 10) -> requests.Response:
+        method = method.lower()
         if method == "post":
             r = requests.post(path_uri, timeout=timeout)
         elif method == "get":
@@ -238,27 +239,27 @@ class VUAdmin(VUAdminUtil):
         r_uri = self.get_uri(self.server_url, self.key, 'admin/keys/remove', params)
         return self.send_http_request(r_uri, 'get')
 
-    def create_api_key(self, name: str, dials: str) -> requests.Response:
+    def create_api_key(self, name: str, dials: list[str]) -> requests.Response:
         """
         Create a new API key.
 
         :param name: str, the name for the new key.
-        :param dials: str, the dials to associate with the key.
+        :param dials: list[str], the dial UIDs to associate with the key.
         :return: requests.Response
         """
-        params = f'&name={quote(name, safe="")}&dials={quote(dials, safe="")}'
+        params = f'&name={quote(name, safe="")}&dials={quote(";".join(dials), safe="")}'
         r_uri = self.get_uri(self.server_url, self.key, 'admin/keys/create', params)
         return self.send_http_request(r_uri, 'post')
 
-    def update_api_key(self, name: str, target_key: str, dials: str) -> requests.Response:
+    def update_api_key(self, name: str, target_key: str, dials: list[str]) -> requests.Response:
         """
         Update an existing API key.
 
         :param name: str, the new name for the key.
         :param target_key: str, the key to update.
-        :param dials: str, the updated dials to associate.
+        :param dials: list[str], the updated dial UIDs to associate.
         :return: requests.Response
         """
-        params = f'&key={quote(target_key, safe="")}&name={quote(name, safe="")}&dials={quote(dials, safe="")}'
+        params = f'&key={quote(target_key, safe="")}&name={quote(name, safe="")}&dials={quote(";".join(dials), safe="")}'
         r_uri = self.get_uri(self.server_url, self.key, 'admin/keys/update', params)
         return self.send_http_request(r_uri, 'post')
