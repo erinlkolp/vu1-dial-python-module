@@ -50,7 +50,7 @@ print(dial_list.json())
 # Set first dial to 75% with a blue backlight
 uid = dial_list.json()[0]["uid"]
 vu_meter.set_dial_value(uid, 75)
-vu_meter.set_dial_color(uid, 0, 0, 255)
+vu_meter.set_dial_color(uid, 0, 0, 100)
 
 # List API keys
 api_key_list = admin_api.list_api_keys()
@@ -82,7 +82,7 @@ vu_meter = vudialsclient.VUDial(server_address, server_port, api_key)
 | `list_dials()` | List all connected dials |
 | `get_dial_info(uid)` | Get status/info for a specific dial |
 | `set_dial_value(uid, value)` | Set the dial position (0–100) |
-| `set_dial_color(uid, red, green, blue)` | Set the backlight color (0–255 each channel) |
+| `set_dial_color(uid, red, green, blue)` | Set the backlight color (0–100 each channel) |
 | `set_dial_background(uid, file)` | Upload a background image file |
 | `get_dial_image_crc(uid)` | Get the CRC of the current background image |
 | `set_dial_name(uid, name)` | Assign a name to a dial |
