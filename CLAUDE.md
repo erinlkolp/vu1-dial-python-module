@@ -93,7 +93,7 @@ These are pre-existing design constraints of the VU1 server API — do not silen
 
 1. **Plain HTTP only.** The server only listens on HTTP; HTTPS is not supported. Keep traffic on trusted local interfaces.
 2. **Key-in-URL authentication.** Both `key=` and `admin_key=` parameters appear in the query string and will be recorded in server access logs, proxy logs, and HTTP client history. This is intentional until the upstream server adds header-based auth.
-3. **No input validation in the library.** The library does not validate value ranges (e.g., RGB 0–255) or UID format; that is the server's responsibility.
+3. **No input validation in the library.** The library does not validate value ranges (e.g., RGB 0–100) or UID format; that is the server's responsibility.
 
 ---
 

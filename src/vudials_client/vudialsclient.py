@@ -95,9 +95,9 @@ class VUDial(VUUtil):
         Set the dial backlight color.
 
         :param uid: str, the uid of the vu-dial.
-        :param red: int, red channel (0-255).
-        :param green: int, green channel (0-255).
-        :param blue: int, blue channel (0-255).
+        :param red: int, red channel (0-100).
+        :param green: int, green channel (0-100).
+        :param blue: int, blue channel (0-100).
         :return: requests.Response
         """
         api_call = f'dial/{quote(uid, safe="")}/backlight'
